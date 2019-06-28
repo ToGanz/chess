@@ -6,6 +6,8 @@ require './lib/bishop.rb'
 require './lib/knight.rb'
 require './lib/pawn.rb'
 require './lib/board.rb'
+require 'yaml'
+
 class Game
 
   COL_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
@@ -22,6 +24,16 @@ class Game
   def get_input_from
     puts "#{@active_player.upcase}: Choose the position of the figure you want to move"
     input = gets.chomp
+    if input == 'save'
+      save_game
+      puts "#{@active_player.upcase}: Choose the position of the figure you want to move"
+      input = gets.chomp
+    elsif input == 'load'
+      load_game
+      board.display
+      puts "#{@active_player.upcase}: Choose the position of the figure you want to move"
+      input = gets.chomp
+    end
     input = input.split(', ')
     if !ROW_NAMES.include?(input[0].to_i) 
       puts "Not a valid option. Choose: row, col !"
@@ -84,6 +96,31 @@ class Game
     puts "Game Over!"
   end
 
+  def save_game
+    save_data = {
+      board: @board,
+      turn: @turn,
+      active_player: @active_player
+    }
+
+    filename = "save.yaml"
+  
+    File.open(filename,'w') do |file|
+      file.puts save_data.to_yaml
+    end
+    puts "Data has been saved"
+  end
+
+  def load_game
+    return if !(File.exists? 'save.yaml')
+    save_data = YAML.load_file("save.yaml")
+    @board = save_data[:board]
+    @turn = save_data[:turn]
+    @active_player = save_data[:active_player]
+
+    puts "Data has been loaded"
+  end
+
   #private
 
   def game_over?
@@ -101,6 +138,6 @@ class Game
 
 end
 
-game1 = Game.new
+# game1 = Game.new
 
-game1.play
+# game1.play
