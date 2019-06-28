@@ -1,10 +1,10 @@
-require 'chess_piece.rb'
-require 'king.rb'
-require 'queen.rb'
-require 'rook.rb'
-require 'bishop.rb'
-require 'knight.rb'
-require 'pawn.rb'
+require './lib/chess_piece.rb'
+require_relative 'king.rb'
+require_relative 'queen.rb'
+require_relative 'rook.rb'
+require_relative 'bishop.rb'
+require_relative 'knight.rb'
+require_relative 'pawn.rb'
 
 class Board
   attr_accessor :grid
@@ -54,35 +54,21 @@ class Board
   def possible_move?(from, new_position)
     piece = @grid[from[0]][from[1]]
     legal_moves = piece.moves
-    puts 0
-    puts legal_moves.to_s
     legal_moves.each do |direction|
-      puts 1
-      puts direction.to_s
       if direction.nil? == false && direction.include?(new_position)
         array_index = direction.index(new_position)
         direction[0..array_index].each do |coordinates|
-          puts 2
-          puts coordinates.to_s
           if blocked_by(coordinates) == @grid[from[0]][from[1]].color
-            puts 3
-            puts blocked_by(coordinates)
             return false
           elsif blocked_by(coordinates) != false
-            puts 4
-            puts blocked_by(coordinates)
             return false if coordinates != new_position 
           end
         end
         return true
       elsif direction.nil? == false && direction == new_position 
         if blocked_by(direction) == @grid[from[0]][from[1]].color
-          puts 33
-          puts blocked_by(direction)
           return false
         elsif blocked_by(direction) != false
-          puts 44
-          puts blocked_by(direction)
           return false if direction != new_position 
         end
         return true
@@ -97,6 +83,7 @@ class Board
     #@grid[piece.position[0]][piece.position[1]] = ChessPiece.new([piece.position[0], piece.position[1]], 'empty')
     @grid[from[0]][from[1]] = ChessPiece.new([from[0], from[1]], 'empty')
     @grid[new_position[0]][new_position[1]] = piece
+    piece.position = new_position
   end
 
   def display

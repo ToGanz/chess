@@ -1,4 +1,4 @@
-require 'chess_piece.rb'
+require './lib/chess_piece.rb'
 
 class Bishop < ChessPiece
   attr_accessor :number

@@ -1,11 +1,11 @@
-require 'chess_piece.rb'
-require 'king.rb'
-require 'queen.rb'
-require 'rook.rb'
-require 'bishop.rb'
-require 'knight.rb'
-require 'pawn.rb'
-require 'board.rb'
+require './lib/chess_piece.rb'
+require './lib/king.rb'
+require './lib/queen.rb'
+require './lib/rook.rb'
+require './lib/bishop.rb'
+require './lib/knight.rb'
+require './lib/pawn.rb'
+require './lib/board.rb'
 class Game
 
   COL_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
@@ -20,22 +20,38 @@ class Game
   end
 
   def get_input_from
-    puts "Choose the position of the figure you want to move"
+    puts "#{@active_player.upcase}: Choose the position of the figure you want to move"
     input = gets.chomp
-    input = input.split!(', ')
-    return false if !ROW_NAMES.include?(input[0].to_i) 
-    return false if COL_NAMES.include?(input[1])
+    input = input.split(', ')
+    if !ROW_NAMES.include?(input[0].to_i) 
+      puts "Not a valid option. Choose: row, col !"
+      return false 
+    end
+    if !COL_NAMES.include?(input[1])
+      puts "Not a valid option. Choose: row, col !"
+      return false 
+    end
     row = ROW_NAMES.index(input[0].to_i)
     col = COL_NAMES.index(input[1])
+    if @board.grid[row][col].color != @active_player
+      puts "Not a valid option. Choose your own figure!"
+      return false 
+    end
     from = [row, col]
   end
 
   def get_input_to
-    puts "Choose the position you want to move to"
+    puts "#{@active_player.upcase}: Choose the position you want to move to"
     input = gets.chomp
-    input = input.split!(', ')
-    return false if !ROW_NAMES.include?(input[0].to_i) 
-    return false if COL_NAMES.include?(input[1])
+    input = input.split(', ')
+    if !ROW_NAMES.include?(input[0].to_i) 
+      puts "Not a valid option. Choose: row, col !"
+      return false 
+    end
+    if !COL_NAMES.include?(input[1])
+      puts "Not a valid option. Choose: row, col !"
+      return false 
+    end
     row = ROW_NAMES.index(input[0].to_i)
     col = COL_NAMES.index(input[1])
     to = [row, col]
@@ -43,17 +59,28 @@ class Game
 
   def play
     while game_over? == false
-      swap_players
-      display
-      input = false
-      while input == false
-        input = get_input
+      @board.display
+      from = false
+      while from == false
+        from = get_input_from
       end
-      @board.drop_piece((input.to_i - 1), @active_player.sign)
-      @turn += 1
-      game_over?
+
+      to = false
+      while to == false
+        to = get_input_to
+      end
+
+      if @board.possible_move?(from, to)
+        @board.move(from, to)
+        @turn += 1
+        swap_players
+        game_over?
+      else
+        puts "What is this? Choose a legal move!"
+      end
+      
     end
-    display
+    @board.display
     puts "Game Over!"
   end
 
@@ -73,3 +100,7 @@ class Game
 	end
 
 end
+
+game1 = Game.new
+
+game1.play
